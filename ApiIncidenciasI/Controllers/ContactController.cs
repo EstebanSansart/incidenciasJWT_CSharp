@@ -1,3 +1,4 @@
+using ApiIncidenciasI.Dtos;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -5,24 +6,38 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiIncidenciasI.Controllers;
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
 public class CategoryController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public CategoryController(IUnitOfWork unitOfWork)
+    public CategoryController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
-    [HttpGet]
+    /*[HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<Contact>>> Get()
     {
         var contacts = await _unitOfWork.Contacts.GetAllAsync();
         return Ok(contacts);
+    }*/
+    [HttpGet]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<ContactDto>>> Get()
+    {
+        var contacts = await _unitOfWork.Contacts.GetAllAsync();
+        return _mapper.Map<List<ContactDto>>(contacts);
     }
     [HttpGet("{id}")]
+    [MapToApiVersion("1.1")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Get(int id)
@@ -31,7 +46,7 @@ public class CategoryController : BaseApiController
         return Ok(contact);
     }
 
-    [HttpPost]
+    /*[HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Contact>> Post(Contact contactPO){
@@ -42,9 +57,22 @@ public class CategoryController : BaseApiController
             return BadRequest();
         }
         return CreatedAtAction(nameof(Post),new {id = contactPO.Id}, contactPO);
+    }*/
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<Contact>> Post(ContactDto contactDto){
+        var contact = _mapper.Map<Contact>(contactDto);
+        this._unitOfWork.Contacts.Add(contact);
+        await _unitOfWork.SaveAsync();
+        if (contact == null)
+        {
+            return BadRequest();
+        }
+        return CreatedAtAction(nameof(Post),new {id = contact.Id}, contactDto);
     }
 
-    [HttpPut("{id}")]
+    /*[HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,6 +84,20 @@ public class CategoryController : BaseApiController
         _unitOfWork.Contacts.Update(contactPU);
         await _unitOfWork.SaveAsync();
         return contactPU;
+    }*/
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ContactDto>> Put(int id, [FromBody]ContactDto contactDto){
+        if(contactDto == null)
+        {
+            return NotFound();
+        }
+        var contacts = _mapper.Map<Contact>(contactDto);
+        _unitOfWork.Contacts.Update(contacts);
+        await _unitOfWork.SaveAsync();
+        return contactDto;
     }
 
     [HttpDelete("{id}")]

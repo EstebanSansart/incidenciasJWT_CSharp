@@ -12,7 +12,6 @@ public class AreaController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-
     public AreaController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
@@ -37,7 +36,6 @@ public class AreaController : BaseApiController
         return _mapper.Map<List<AreaDto>>(areas);
     }
     [HttpGet("{id}")]
-    [MapToApiVersion("1.1")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Get(int id)

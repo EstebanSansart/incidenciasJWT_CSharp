@@ -1,3 +1,4 @@
+using ApiIncidenciasI.Dtos;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -5,22 +6,34 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiIncidenciasI.Controllers;
+[ApiVersion("1.0")]
+[ApiVersion("1.1")]
 public class IncidenceLevelController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
-
-    public IncidenceLevelController(IUnitOfWork unitOfWork)
+    private readonly IMapper _mapper;
+    public IncidenceLevelController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
-    [HttpGet]
+    /*[HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<IncidenceLevel>>> Get()
     {
         var incidence_levels = await _unitOfWork.IncidenceLevels.GetAllAsync();
         return Ok(incidence_levels);
+    }*/
+    [HttpGet]
+    [MapToApiVersion("1.0")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<IncidenceLevelDto>>> Get()
+    {
+        var incidenceLevels = await _unitOfWork.IncidenceLevels.GetAllAsync();
+        return _mapper.Map<List<IncidenceLevelDto>>(incidenceLevels);
     }
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -31,7 +44,7 @@ public class IncidenceLevelController : BaseApiController
         return Ok(incidence_level);
     }
 
-    [HttpPost]
+    /*[HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IncidenceLevel>> Post(IncidenceLevel incidence_levelPO){
@@ -42,9 +55,22 @@ public class IncidenceLevelController : BaseApiController
             return BadRequest();
         }
         return CreatedAtAction(nameof(Post),new {id = incidence_levelPO.Id}, incidence_levelPO);
+    }*/
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IncidenceLevel>> Post(IncidenceLevelDto incidenceLevelDto){
+        var incidenceLevel = _mapper.Map<IncidenceLevel>(incidenceLevelDto);
+        this._unitOfWork.IncidenceLevels.Add(incidenceLevel);
+        await _unitOfWork.SaveAsync();
+        if (incidenceLevel == null)
+        {
+            return BadRequest();
+        }
+        return CreatedAtAction(nameof(Post),new {id = incidenceLevel.Id}, incidenceLevelDto);
     }
 
-    [HttpPut("{id}")]
+    /*[HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,6 +82,20 @@ public class IncidenceLevelController : BaseApiController
         _unitOfWork.IncidenceLevels.Update(incidence_levelPU);
         await _unitOfWork.SaveAsync();
         return incidence_levelPU;
+    }*/
+    [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IncidenceLevelDto>> Put(int id, [FromBody]IncidenceLevelDto incidenceLevelDto){
+        if(incidenceLevelDto == null)
+        {
+            return NotFound();
+        }
+        var incidenceLevels = _mapper.Map<IncidenceLevel>(incidenceLevelDto);
+        _unitOfWork.IncidenceLevels.Update(incidenceLevels);
+        await _unitOfWork.SaveAsync();
+        return incidenceLevelDto;
     }
 
     [HttpDelete("{id}")]
