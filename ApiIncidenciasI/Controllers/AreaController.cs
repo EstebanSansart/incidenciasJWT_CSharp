@@ -37,6 +37,7 @@ public class AreaController : BaseApiController
         return _mapper.Map<List<AreaDto>>(areas);
     }
     [HttpGet("{id}")]
+    [MapToApiVersion("1.1")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Get(int id)
@@ -67,9 +68,8 @@ public class AreaController : BaseApiController
         if (area == null)
         {
             return BadRequest();
-        }
-        areaDto.AreaId = area.Id;
-        return CreatedAtAction(nameof(Post),new {id = areaDto.AreaId}, areaDto);
+        }        
+        return CreatedAtAction(nameof(Post),new {id = area.Id}, areaDto);
     }
 
     /*[HttpPut("{id}")]
