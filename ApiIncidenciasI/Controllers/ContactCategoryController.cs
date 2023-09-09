@@ -12,7 +12,6 @@ public class ContactCategoryController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-
     public ContactCategoryController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         this._unitOfWork = unitOfWork;
@@ -37,7 +36,6 @@ public class ContactCategoryController : BaseApiController
         return _mapper.Map<List<ContactCategoryDto>>(contact_categories);
     }
     [HttpGet("{id}")]
-    [MapToApiVersion("1.1")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Get(int id)

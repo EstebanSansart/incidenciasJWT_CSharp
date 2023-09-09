@@ -8,12 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiIncidenciasI.Controllers;
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-public class CategoryTypeController : BaseApiController
+public class ContactTypeController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-
-    public CategoryTypeController(IUnitOfWork unitOfWork, IMapper mapper)
+    public ContactTypeController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;

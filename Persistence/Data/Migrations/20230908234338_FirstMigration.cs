@@ -306,7 +306,7 @@ namespace Persistence.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "UserArea",
+                name: "UserAreas",
                 columns: table => new
                 {
                     IdUserFk = table.Column<int>(type: "int", nullable: false),
@@ -317,14 +317,14 @@ namespace Persistence.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserArea", x => new { x.IdUserFk, x.IdAreaFk });
+                    table.PrimaryKey("PK_UserAreas", x => new { x.IdUserFk, x.IdAreaFk });
                     table.ForeignKey(
-                        name: "FK_UserArea_area_AreaId",
+                        name: "FK_UserAreas_area_AreaId",
                         column: x => x.AreaId,
                         principalTable: "area",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_UserArea_user_UserId",
+                        name: "FK_UserAreas_user_UserId",
                         column: x => x.UserId,
                         principalTable: "user",
                         principalColumn: "Id");
@@ -461,13 +461,13 @@ namespace Persistence.Data.Migrations
                 column: "IdRoleFk");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserArea_AreaId",
-                table: "UserArea",
+                name: "IX_UserAreas_AreaId",
+                table: "UserAreas",
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserArea_UserId",
-                table: "UserArea",
+                name: "IX_UserAreas_UserId",
+                table: "UserAreas",
                 column: "UserId");
         }
 
@@ -481,7 +481,7 @@ namespace Persistence.Data.Migrations
                 name: "incidence_detail");
 
             migrationBuilder.DropTable(
-                name: "UserArea");
+                name: "UserAreas");
 
             migrationBuilder.DropTable(
                 name: "contact_category");

@@ -1,5 +1,3 @@
-using Domain.Entities;
-
 namespace ApiIncidenciasI.Dtos;
 public class AreaDto
 {

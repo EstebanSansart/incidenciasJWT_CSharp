@@ -8,12 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiIncidenciasI.Controllers;
 [ApiVersion("1.0")]
 [ApiVersion("1.1")]
-public class CategoryController : BaseApiController
+public class ContactController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-
-    public CategoryController(IUnitOfWork unitOfWork, IMapper mapper)
+    public ContactController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -37,7 +36,6 @@ public class CategoryController : BaseApiController
         return _mapper.Map<List<ContactDto>>(contacts);
     }
     [HttpGet("{id}")]
-    [MapToApiVersion("1.1")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Get(int id)
