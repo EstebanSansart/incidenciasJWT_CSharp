@@ -1,4 +1,5 @@
 using ApiIncidenciasI.Dtos;
+using ApiIncidenciasI.Helpers;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -12,6 +13,7 @@ public class AreaController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+
     public AreaController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
@@ -30,18 +32,21 @@ public class AreaController : BaseApiController
     [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<AreaDto>>> Get()
+    public async Task<IEnumerable<AreaDto>> Get()
     {
         var areas = await _unitOfWork.Areas.GetAllAsync();
         return _mapper.Map<List<AreaDto>>(areas);
     }
-    [HttpGet("{id}")]
+    [HttpGet]
+    [MapToApiVersion("1.1")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<ActionResult<Pager<AreaDto>>> Get11([FromQuery] Params _params)
     {
-        var area = await _unitOfWork.Areas.GetByIdAsync(id);
-        return Ok(area);
+        var areas = await _unitOfWork.Areas.GetAllAsync();
+        var areasDto = _mapper.Map<List<AreaDto>>(areas);
+        var pager = new Pager<AreaDto>(areasDto, areasDto.Count(),_params.PageIndex, _params.PageSize, _params.Search);
+        return CreatedAtAction(nameof(Get), pager);
     }
 
     /*[HttpPost]

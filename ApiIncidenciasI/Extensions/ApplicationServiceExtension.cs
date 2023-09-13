@@ -56,6 +56,7 @@ public static class ApplicationServiceExtension
                 new QueryStringApiVersionReader("ver"),
                 new HeaderApiVersionReader("X-Version")
             );
+            options.ReportApiVersions = true;
         });
     }
 }
