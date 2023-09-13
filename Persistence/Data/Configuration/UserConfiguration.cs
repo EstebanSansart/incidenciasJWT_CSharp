@@ -20,6 +20,16 @@ namespace Persistence.Data.Configuration
             .IsRequired()
             .HasMaxLength(50);
 
+            builder.Property(p => p.UserName)
+            .IsRequired()
+            .HasMaxLength(50);
+
+            builder.Property(p => p.Email)
+            .IsRequired();
+
+            builder.Property(p => p.Password)
+            .IsRequired();
+
             builder.Property(p => p.LastName)
             .IsRequired()
             .HasMaxLength(80);
@@ -32,7 +42,7 @@ namespace Persistence.Data.Configuration
             .WithMany(p => p.Users)
             .HasForeignKey(p => p.IdDocTypeFk);
 
-            builder.HasOne(p => p.Role)
+            builder.HasOne(p => p.Roles)
             .WithMany(p => p.Users)
             .HasForeignKey(p => p.IdRoleFk);
         }
