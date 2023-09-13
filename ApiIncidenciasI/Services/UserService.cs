@@ -52,7 +52,7 @@ public class UserService : IUserService
                                     .First();
             try
             {
-                userr.Roles.Add(defaultRole);
+                userr.Roles = defaultRole;
                 _unitOfWork.Users.Add(userr);
                 await _unitOfWork.SaveAsync();
 
@@ -105,7 +105,7 @@ public class UserService : IUserService
 
     public async Task<string> AddRoleAsync(AddRoleDto model)
     {
-        var usuario = await _unitOfWork.Users
+        var usuario = _unitOfWork.Users
                     .GetByUsernameAsync(model.Username);
         if (usuario == null)
         {
@@ -119,47 +119,43 @@ public class UserService : IUserService
                                         .FirstOrDefault();
             if (rolExiste != null)
             {
-                var usuarioTieneRol = usuario.Roles
-                                            .Any(u => u.Id == rolExiste.Id);
+                var usuarioTieneRol = usuario.Roles;
 
-                if (usuarioTieneRol == false)
-                {
-                    usuario.Roles.Add(rolExiste);
-                    _unitOfWork.Users.Update(usuario);
-                    await _unitOfWork.SaveAsync();
-                }
+                usuario.Roles = rolExiste;
+                _unitOfWork.Users.Update(usuario);
+                await _unitOfWork.SaveAsync();
                 return $"Rol {model.Role} agregado a la cuenta {model.Username} de forma exitosa.";
             }
             return $"Rol {model.Role} no encontrado.";
         }
-        return $"Credenciales incorrectas para el usuario {usuario.Username}.";
+        return $"Credenciales incorrectas para el usuario {usuario.UserName}.";
     }
-    public async Task<UserDataDto> GetTokenAsync(LoginDto model)
+    public UserDataDto GetToken(LoginDto model)
     {
         UserDataDto datosUsuarioDto = new UserDataDto();
-        var usuario = await _unitOfWork.Users
+        var userrr = _unitOfWork.Users
                     .GetByUsernameAsync(model.Username);
-        if (usuario == null)
+        if (userrr == null)
         {
             datosUsuarioDto.EstaAutenticado = false;
             datosUsuarioDto.Mensaje = $"No existe ningún usuario con el username {model.Username}.";
             return datosUsuarioDto;
         }
 
-        var result = _passwordHasher.VerifyHashedPassword(usuario, usuario.Password, model.Password);
+        var result = _passwordHasher.VerifyHashedPassword(userrr, userrr.Password, model.Password);
         if (result == PasswordVerificationResult.Success)
         {
 
             datosUsuarioDto.Mensaje = "Ok";
             datosUsuarioDto.EstaAutenticado = true;
-            datosUsuarioDto.UserName = usuario.Username;
-            datosUsuarioDto.Email = usuario.Username;
-            datosUsuarioDto.Token = _jwtGenerator.CrearToken(usuario);
+            datosUsuarioDto.UserName = userrr.UserName;
+            datosUsuarioDto.Email = userrr.UserName;
+            datosUsuarioDto.Token = _jwtGenerator.CreateToken(userrr);
             return datosUsuarioDto;
 
         }
         datosUsuarioDto.EstaAutenticado = false;
-        datosUsuarioDto.Mensaje = $"Credenciales incorrectas para el usuario {usuario.Username}.";
+        datosUsuarioDto.Mensaje = $"Credenciales incorrectas para el usuario {userrr.UserName}.";
         return datosUsuarioDto;
 
     }
@@ -167,10 +163,8 @@ public class UserService : IUserService
     {
         var roles = user.Roles;
         var roleClaims = new List<Claim>();
-        foreach (var role in roles)
-        {
-            roleClaims.Add(new Claim("roles", role.Nombre));
-        }
+
+            roleClaims.Add(new Claim("roles", roles.Name));
         var claims = new[]
         {
                                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
@@ -191,9 +185,9 @@ public class UserService : IUserService
         return jwtSecurityToken;
     }
 
-    public async Task<LoginDto> UserLogin(LoginDto model)
+    public LoginDto UserLogin(LoginDto model)
     {
-        var usuario = await _unitOfWork.Users.GetByUsernameAsync(model.Username);
+        var usuario = _unitOfWork.Users.GetByUsernameAsync(model.Username);
         var resultado = _passwordHasher.VerifyHashedPassword(usuario, usuario.Password, model.Password);
 
         if (resultado == PasswordVerificationResult.Success)

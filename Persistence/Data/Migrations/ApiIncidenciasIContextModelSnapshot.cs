@@ -330,6 +330,10 @@ namespace Persistence.Data.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("varchar(80)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("IdDocTypeFk")
                         .HasColumnType("int");
 
@@ -342,6 +346,15 @@ namespace Persistence.Data.Migrations
                         .HasColumnType("varchar(80)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
@@ -521,7 +534,7 @@ namespace Persistence.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Role", "Role")
+                    b.HasOne("Domain.Entities.Role", "Roles")
                         .WithMany("Users")
                         .HasForeignKey("IdRoleFk")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -529,7 +542,7 @@ namespace Persistence.Data.Migrations
 
                     b.Navigation("DocType");
 
-                    b.Navigation("Role");
+                    b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserArea", b =>

@@ -5,6 +5,6 @@ namespace ApiIncidenciasI.Services;
 public interface IUserService
 {
     Task<string> RegisterAsync(RegisterDto model);
-    Task<UserDataDto> GetTokenAsync(LoginDto model);
+    UserDataDto GetToken(LoginDto model);
     Task<string> AddRoleAsync(AddRoleDto model);
 }

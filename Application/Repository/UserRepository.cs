@@ -19,4 +19,8 @@ public class UserRepository : GenericRepository<User>, IUserRepository
                             .Include(a => a.UserAreas)
                             .ToListAsync();
     }
+    public User GetByUsernameAsync(string UserName)
+    {
+        return Find(x => x.UserName == UserName).FirstOrDefault();
+    }
 }

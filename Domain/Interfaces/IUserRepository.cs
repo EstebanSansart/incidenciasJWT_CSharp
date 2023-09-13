@@ -8,6 +8,6 @@ namespace Domain.Interfaces
 {
     public interface IUserRepository : IGenericRepository<User>
     {
-        
+        User GetByUsernameAsync(string UserName);
     }
 }
